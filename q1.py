@@ -1,17 +1,18 @@
 import vtk
 import numpy as np
 
-# Örnek bir dalga yüzeyi (sine wave) oluşturan fonksiyon
+# Örnek bir mesh - dalga yüzeyi 
 def create_wave_mesh():
     points = vtk.vtkPoints()
-    polys = vtk.vtkCellArray()
+    polys = vtk.vtkCellArray() 
+    print(points.GetNumberOfPoints())
 
-    wave_size = 40  # Mesh çözünürlüğünü artırdık
+    wave_size = 40 
     for i in range(wave_size):
         for j in range(wave_size):
             x = i
             y = j
-            z = 2 * np.sin(i * 0.4) * np.cos(j * 0.4)  # Frekansı ve genliği artırdık
+            z = 2 * np.sin(i * 0.4) * np.cos(j * 0.4)  
             points.InsertNextPoint(x, y, z)
 
     for i in range(wave_size - 1):
@@ -29,7 +30,6 @@ def create_wave_mesh():
 
     return polydata
 
-# Komşuları bulan fonksiyon
 def find_neighbors(mesh, point_id):
     neighbors = set()
     cell_ids = vtk.vtkIdList()
@@ -46,7 +46,6 @@ def find_neighbors(mesh, point_id):
     
     return list(neighbors)
 
-# Aşağı yöne bakan ekstremum noktalarını bulan fonksiyon
 def find_downward_extrema_points(mesh):
     points = mesh.GetPoints()
     num_points = points.GetNumberOfPoints()
@@ -67,20 +66,18 @@ def find_downward_extrema_points(mesh):
         if is_min:
             downward_extrema_points.InsertNextPoint(points.GetPoint(i))
     
-    # Aşağı yöne bakan ekstremum noktalarını yazdır
     print(f"Bulunan aşağı yöne bakan ekstremum noktaları sayısı: {downward_extrema_points.GetNumberOfPoints()}")
     for i in range(downward_extrema_points.GetNumberOfPoints()):
         print(downward_extrema_points.GetPoint(i))
     
     return downward_extrema_points
 
-# Görselleştirme fonksiyonu
 def visualize(mesh, extrema_points):
     extrema_polydata = vtk.vtkPolyData()
     extrema_polydata.SetPoints(extrema_points)
     
     sphere = vtk.vtkSphereSource()
-    sphere.SetRadius(0.3)  # Küre boyutunu artırdım
+    sphere.SetRadius(0.3) 
     
     glyph3D = vtk.vtkGlyph3D()
     glyph3D.SetSourceConnection(sphere.GetOutputPort())
@@ -114,9 +111,6 @@ def visualize(mesh, extrema_points):
     render_window_interactor.Start()
 
 if __name__ == "__main__":
-    # Örnek dalga yüzeyi oluştur
     mesh = create_wave_mesh()
-    # Aşağı yöne bakan ekstremum noktalarını bul
     downward_extrema_points = find_downward_extrema_points(mesh)
-    # Görselleştir
     visualize(mesh, downward_extrema_points)
